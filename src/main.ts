@@ -24,19 +24,34 @@ btnStart?.addEventListener("click", () => {
     init();
 });
 
-function init(){
+async function init(){
     console.log('init')
     btnStart.remove();
     document.querySelectorAll(".tile").forEach( (element) => {
         element.remove();
     })
 
-    const tiles = new Array(16).fill('').map( (_, i) => {
-        const tile = document.createElement("div")
-        tile.classList.add("tile")
-        tile.classList.add(colors[Math.floor(i / 2)])
-        return tile
-    })
+    // const tiles = new Array(16).fill('').map( (_, i) => {
+    //     const tile = document.createElement("div")
+    //     tile.classList.add("tile")
+    //     tile.classList.add(colors[Math.floor(i / 2)])
+    //     return tile
+    // })
+
+    let tiles = await Promise.all(
+        new Array(8).fill('').map( async (_, i) => {
+            const response = await fetch("https://dog.ceo/api/breeds/image/random")
+            const data = await response.json()
+            const tile = document.createElement("div")
+            tile.style.backgroundImage = "url('"+data.message+"')"
+            tile.classList.add("tile")
+            tile.classList.add("not-revealed")
+
+            return tile
+        })
+    )
+
+    tiles = tiles.reduce( (global, tile) => [...global, tile, tile.cloneNode(true) as HTMLDivElement], [] as HTMLDivElement[])
     // Shuffle the tiles
     tiles.sort( () => Math.random() - 0.5)
     
@@ -46,9 +61,7 @@ function init(){
     // Select multiple elements
     let nodeList = document.querySelectorAll(".tile");
     let elements = Array.from(nodeList);
-    elements.forEach( (element) => {
-        element.classList.add("not-revealed")
-        
+    elements.forEach( (element) => {        
         element.addEventListener("click", () => {
             if(element.classList.contains("revealed")){
                 element.classList.remove("revealed")
@@ -69,7 +82,7 @@ function init(){
                 revealed = document.querySelectorAll(".revealed")
                 
                 if(revealed.length === 2){
-                    if(revealed[0].classList.item(1) === revealed[1].classList.item(1)){   
+                    if ((revealed[0] as HTMLDivElement).style.getPropertyValue("background-image") === (revealed[1] as HTMLDivElement).style.getPropertyValue("background-image")) {
                         const first = revealed[0]
                         const second = revealed[1]
 
