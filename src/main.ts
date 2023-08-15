@@ -1,4 +1,5 @@
 let timeoutId: number;
+let nbCoups = 0;
 const colors = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "brown"];
 
 // Attention aux "as" qui règlent pas mal de soucis
@@ -26,6 +27,7 @@ btnStart?.addEventListener("click", () => {
 
 async function init(){
     console.log('init')
+    nbCoups = 0;
     btnStart.remove();
     document.querySelectorAll(".tile").forEach( (element) => {
         element.remove();
@@ -39,7 +41,7 @@ async function init(){
     // })
 
     let tiles = await Promise.all(
-        new Array(8).fill('').map( async (_, i) => {
+        new Array(8).fill('').map( async () => {
             const response = await fetch("https://dog.ceo/api/breeds/image/random")
             const data = await response.json()
             const tile = document.createElement("div")
@@ -82,6 +84,7 @@ async function init(){
                 revealed = document.querySelectorAll(".revealed")
                 
                 if(revealed.length === 2){
+                    nbCoups++;
                     if ((revealed[0] as HTMLDivElement).style.getPropertyValue("background-image") === (revealed[1] as HTMLDivElement).style.getPropertyValue("background-image")) {
                         const first = revealed[0]
                         const second = revealed[1]
@@ -104,7 +107,9 @@ async function init(){
             }
 
             if(document.querySelectorAll(".found").length === 16){
-                setTimeout( () => alert("Bravo ! Partie terminée"), 100)
+                setTimeout( () => alert("Bravo ! Partie terminée en " + nbCoups + " coups ^^"), 100)
+                const history: number[] = JSON.parse(localStorage.getItem("history") as string) || []
+                localStorage.setItem("history", JSON.stringify([...history, nbCoups]))
                 app.appendChild(btnStart)
             }
         })
