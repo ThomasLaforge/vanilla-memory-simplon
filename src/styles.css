@@ -9,21 +9,46 @@ h1 {
 }
 
 .tiles {
-    width: 80%;
+    width: 40%;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
+@media screen and (max-width: 1120px) {
+    .tiles {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .tiles {
+        width: 75%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .tiles {
+        width:80%;
+    }
+}
+
+
 .tile {
-    width: 21%;
+    width: 23%;
     aspect-ratio : 1 / 1;
     background-repeat: no-repeat;
     background-size: cover;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+@media screen and (max-width: 420px) {
+    .tile {
+        width: 31%;
+    }
 }
 
 .red {
